@@ -19,12 +19,6 @@ namespace Alchemy
 
         protected int BufferSize = 512;
 
-        /// <summary>
-        /// The number of connected clients.
-        /// </summary>
-        /// 
-        private int _clients;
-
         private IPAddress _listenAddress = IPAddress.Any;
 
         private TcpListener _listener;
@@ -53,14 +47,6 @@ namespace Alchemy
         {
             get { return _port; }
             set { _port = value; }
-        }
-
-        /// <summary>
-        /// Gets the client count.
-        /// </summary>
-        public int Clients
-        {
-            get { return _clients; }
         }
 
         /// <summary>
@@ -154,15 +140,7 @@ namespace Alchemy
             _connectReady.Release();
             if (connection != null)
             {
-                _clientLock.Wait();
-                _clients++;
-                _clientLock.Release();
-
                 ThreadPool.QueueUserWorkItem(OnRunClient, connection);
-
-                _clientLock.Wait();
-                _clients--;
-                _clientLock.Release();
             }
         }
 
