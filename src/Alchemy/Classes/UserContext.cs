@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using Alchemy.Handlers.WebSocket;
+using System.Web.UI.WebControls;
 
 namespace Alchemy.Classes
 {
@@ -197,6 +198,11 @@ namespace Alchemy.Classes
             dataFrame.IsByte = true;
             dataFrame.Append(someBytes);
             Context.Handler.Send(dataFrame, Context, raw, close);
+        }
+
+        public void Disconnect()
+        {
+            Context.Disconnect();
         }
     }
 }
