@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using Alchemy.Classes;
 using Alchemy.Handlers;
+using System.Web.UI;
 
 namespace Alchemy
 {
@@ -23,14 +24,14 @@ namespace Alchemy
         private static CancellationTokenSource cancellation = new CancellationTokenSource();
 
         private static ConcurrentQueue<Context> ContextQueue { get; set; }
-        private static Dictionary<Context, WebSocketServer> ContextMapping { get; set; }
+        //private static Dictionary<Context, WebSocketServer> ContextMapping { get; set; }
 
         private static List<Context> CurrentConnections { get; set; }
 
         static WebSocketServer()
         {
             ContextQueue = new ConcurrentQueue<Context>();
-            ContextMapping = new Dictionary<Context, WebSocketServer>();
+//            ContextMapping = new Dictionary<Context, WebSocketServer>();
             CurrentConnections = new List<Context>();
 
             CleanupThread = new Thread(HandleContextCleanupThread);
@@ -60,12 +61,8 @@ namespace Alchemy
                 {
                     continue;
                 }
-
-                lock (ContextMapping)
-                {
-                    WebSocketServer client = ContextMapping[context];
-                    client.SetupContext(context);
-                }
+               
+                context.Server.SetupContext(context);
 
                 lock(CurrentConnections){
                     CurrentConnections.Add(context);
@@ -84,17 +81,14 @@ namespace Alchemy
                     if (cancellation.IsCancellationRequested) break;
 
                     var connection = CurrentConnections[count];
+                    if (connection == null)
+                        continue;
 
                     if (!connection.Connected)
                     {
                         lock (CurrentConnections)
                         {
                             CurrentConnections.RemoveAt(count);
-                        }
-
-                        lock (ContextMapping)
-                        {
-                            ContextMapping.Remove(connection);
                         }
 
                         connection.Handler.UnregisterContext(connection);
@@ -232,11 +226,6 @@ namespace Alchemy
 
             if (context.Connected)
             {
-                lock (ContextMapping)
-                {
-                    ContextMapping[context] = this;
-                }
-
                 ContextQueue.Enqueue(context);
             }
         }
