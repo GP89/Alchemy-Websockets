@@ -8,11 +8,6 @@ namespace Alchemy
     public abstract class TcpServer : IDisposable
     {
         /// <summary>
-        /// This Semaphore protects our clients variable on increment/decrement when a user connects/disconnects.
-        /// </summary>
-        private readonly SemaphoreSlim _clientLock = new SemaphoreSlim(1);
-
-        /// <summary>
         /// Limits how many active connect events we have.
         /// </summary>
         private readonly SemaphoreSlim _connectReady = new SemaphoreSlim(10);
