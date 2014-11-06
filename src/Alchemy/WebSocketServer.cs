@@ -212,21 +212,28 @@ namespace Alchemy
         /// <param name="data">The TCP Connection.</param>
         protected override void OnRunClient(object data)
         {
-            var connection = (TcpClient)data;
-            var context = new Context(this, connection);
-
-            context.UserContext.ClientAddress = context.Connection.Client.RemoteEndPoint;
-            context.UserContext.SetOnConnect(OnConnect);
-            context.UserContext.SetOnConnected(OnConnected);
-            context.UserContext.SetOnDisconnect(OnDisconnect);
-            context.UserContext.SetOnSend(OnSend);
-            context.UserContext.SetOnReceive(OnReceive);
-            context.BufferSize = BufferSize;
-            context.UserContext.OnConnect();
-
-            if (context.Connected)
+            try
             {
-                ContextQueue.Enqueue(context);
+                var connection = (TcpClient)data;
+                var context = new Context(this, connection);
+
+                context.UserContext.ClientAddress = context.Connection.Client.RemoteEndPoint;
+                context.UserContext.SetOnConnect(OnConnect);
+                context.UserContext.SetOnConnected(OnConnected);
+                context.UserContext.SetOnDisconnect(OnDisconnect);
+                context.UserContext.SetOnSend(OnSend);
+                context.UserContext.SetOnReceive(OnReceive);
+                context.BufferSize = BufferSize;
+                context.UserContext.OnConnect();
+
+                if (context.Connected)
+                {
+                    ContextQueue.Enqueue(context);
+                }
+            }
+            catch (Exception)
+            {
+                
             }
         }
 

@@ -76,6 +76,8 @@ namespace Alchemy.Classes
             set { Context.MaxFrameSize = value; }
         }
 
+        public bool Connected { get {return Context.Connected;} }
+
         /// <summary>
         /// Called when [connect].
         /// </summary>
