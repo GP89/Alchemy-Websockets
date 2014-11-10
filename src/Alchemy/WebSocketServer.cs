@@ -70,7 +70,7 @@ namespace Alchemy
             }
         }
 
-        private static void HandleContextCleanupThread()
+        static void HandleContextCleanupThread()
         {
             while (!cancellation.IsCancellationRequested)
             {
@@ -84,7 +84,7 @@ namespace Alchemy
                     if (connection == null)
                         continue;
 
-                    if (!connection.Connected)
+                    if (!connection.Connected || (DateTime.UtcNow - connection.LastPongRecieved).TotalSeconds > 60)
                     {
                         lock (CurrentConnections)
                         {
@@ -94,7 +94,9 @@ namespace Alchemy
                         connection.Handler.UnregisterContext(connection);
 
                         connection.Dispose();
+                        continue;
                     }
+
                 }
             }
         }

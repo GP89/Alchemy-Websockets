@@ -2,6 +2,8 @@
 using System.Net;
 using Alchemy.Handlers.WebSocket;
 using System.Web.UI.WebControls;
+using System.ComponentModel;
+using System.Text;
 
 namespace Alchemy.Classes
 {
@@ -77,6 +79,8 @@ namespace Alchemy.Classes
         }
 
         public bool Connected { get {return Context.Connected;} }
+
+        public DateTime LastPongRecieved { get {return Context.LastPongRecieved;} set {Context.LastPongRecieved = value;} }
 
         /// <summary>
         /// Called when [connect].
@@ -200,6 +204,15 @@ namespace Alchemy.Classes
             dataFrame.IsByte = true;
             dataFrame.Append(someBytes);
             Context.Handler.Send(dataFrame, Context, raw, close);
+        }
+
+        public void Ping()
+        {
+            var dataFrame = DataFrame.CreateInstance();
+            dataFrame.State = DataFrame.DataState.Ping;
+            dataFrame.Append("ping");
+            Context.Handler.Send(dataFrame, Context, false, false);
+            Send(dataFrame);
         }
 
         public void Disconnect()

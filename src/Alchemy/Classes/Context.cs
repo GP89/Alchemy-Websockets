@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Threading;
 using Alchemy.Handlers;
 using Alchemy.Handlers.WebSocket;
+using System.Security.Policy;
+using System.Web.UI.WebControls;
 
 namespace Alchemy.Classes
 {
@@ -76,6 +78,8 @@ namespace Alchemy.Classes
         public SocketAsyncEventArgs ReceiveEventArgs { get; set; }
         public SocketAsyncEventArgs SendEventArgs { get; set; }
 
+        public DateTime LastPongRecieved { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Context"/> class.
         /// </summary>
@@ -95,6 +99,7 @@ namespace Alchemy.Classes
             {
                 UserContext.ClientAddress = connection.Client.RemoteEndPoint;
             }
+            LastPongRecieved = DateTime.UtcNow;
         }
 
         /// <summary>
