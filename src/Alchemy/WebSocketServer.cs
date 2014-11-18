@@ -47,26 +47,33 @@ namespace Alchemy
 
         private static void HandleClientThread()
         {
-            while (!cancellation.Token.IsCancellationRequested)
+            try
             {
-                Context context;
-
-                while (ContextQueue.Count == 0)
+                while (!cancellation.Token.IsCancellationRequested)
                 {
-                    Thread.Sleep(10);
-                    if (cancellation.Token.IsCancellationRequested) return;
-                }
+                    Context context;
 
-                if (!ContextQueue.TryDequeue(out context))
-                {
-                    continue;
-                }
-               
-                context.Server.SetupContext(context);
+                    while (ContextQueue.Count == 0)
+                    {
+                        Thread.Sleep(10);
+                        if (cancellation.Token.IsCancellationRequested) return;
+                    }
 
-                lock(CurrentConnections){
-                    CurrentConnections.Add(context);
+                    if (!ContextQueue.TryDequeue(out context))
+                    {
+                        continue;
+                    }
+
+                    context.Server.SetupContext(context);
+
+                    lock(CurrentConnections){
+                        CurrentConnections.Add(context);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
 
