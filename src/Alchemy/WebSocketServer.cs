@@ -311,25 +311,33 @@ namespace Alchemy
         }
         void ReceiveEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
-            var context = (Context)e.UserToken;
-            context.Reset();
-            if (e.SocketError != SocketError.Success)
+            try
             {
-            //logger.Error("Socket Error: " + e.SocketError.ToString());
-                context.ReceivedByteCount = 0;
-            } else {
-                context.ReceivedByteCount = e.BytesTransferred;
+                var context = (Context)e.UserToken;
+                context.Reset();
+                if (e.SocketError != SocketError.Success)
+                {
+                    //logger.Error("Socket Error: " + e.SocketError.ToString());
+                    context.ReceivedByteCount = 0;
+                } else {
+                    context.ReceivedByteCount = e.BytesTransferred;
+                }
+
+                if (context.ReceivedByteCount > 0)
+                {
+                    context.Handler.HandleRequest(context);
+                    context.ReceiveReady.Release();
+                    StartReceive(context);
+                } else {
+                    context.Disconnect();
+                    context.ReceiveReady.Release();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
 
-            if (context.ReceivedByteCount > 0)
-            {
-                context.Handler.HandleRequest(context);
-                context.ReceiveReady.Release();
-                StartReceive(context);
-            } else {
-                context.Disconnect();
-                context.ReceiveReady.Release();
-            }
         }
         
         public void Dispose()
