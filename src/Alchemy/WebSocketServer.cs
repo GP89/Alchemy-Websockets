@@ -101,6 +101,7 @@ namespace Alchemy
                         connection.Handler.UnregisterContext(connection);
 
                         connection.Dispose();
+                        connection = null;
                         continue;
                     }
 

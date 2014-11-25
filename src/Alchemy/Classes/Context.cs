@@ -125,23 +125,52 @@ namespace Alchemy.Classes
         /// </summary>
         public void Dispose()
         {
-            Connected = false;
-            UserContext.OnDisconnect();
-            
-            // close client connection
-            if (Connection != null)
+
+            try
             {
-                try
+                Connected = false;
+                UserContext.OnDisconnect();
+
+                // close client connection
+                if (Connection != null)
                 {
-                    Connection.Close();
-                }
-                catch (Exception)
-                {
-                    // skip
+                    try
+                    {
+                        Connection.Close();
+                    }
+                    catch (Exception)
+                    {
+                        // skip
+                    }
                 }
             }
-            SendReady.Release();
-            ReceiveReady.Release();            
+            catch
+            {}
+
+            try
+            {
+                SendReady.Release();
+                ReceiveReady.Release();  
+            }
+            catch
+            {}
+                    
+
+            try
+            {
+                if (ReceiveEventArgs != null)
+                    ReceiveEventArgs.Dispose();
+            }
+            catch
+            {}
+
+            try
+            {
+                if (SendEventArgs != null)
+                    SendEventArgs.Dispose();
+            }
+            catch
+            {}
         }
 
         #endregion

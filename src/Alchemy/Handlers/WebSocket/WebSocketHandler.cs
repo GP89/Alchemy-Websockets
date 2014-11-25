@@ -41,7 +41,7 @@ namespace Alchemy.Handlers.WebSocket
                             break;
                         case DataFrame.DataState.Pong:
                             context.UserContext.DataFrame.State = DataFrame.DataState.Complete;
-                            Console.WriteLine("pong");
+                            //Console.WriteLine("pong");
                             break;
                     }
                 }
