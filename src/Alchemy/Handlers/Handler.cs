@@ -139,7 +139,15 @@ namespace Alchemy.Handlers
                     continue;
                 }
 
-                Send(message);
+                try
+                {
+                    Send(message);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+
             }
         }
 
@@ -177,30 +185,45 @@ namespace Alchemy.Handlers
         /// <param name="close">if set to <c>true</c> [close].</param>
         public void Send(DataFrame dataFrame, Context context, bool raw = false, bool close = false)
         {
-            if (context.Connected)
+            try
             {
-                HandlerMessage message = new HandlerMessage { DataFrame = dataFrame, Context = context, IsRaw = raw, DoClose = close };
-                MessageQueue.Enqueue(message);
+                if (context.Connected)
+                {
+                    HandlerMessage message = new HandlerMessage { DataFrame = dataFrame, Context = context, IsRaw = raw, DoClose = close };
+                    MessageQueue.Enqueue(message);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                
             }
         }
 
         void SendEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
-            HandlerMessage message = (HandlerMessage)e.UserToken;
-
-            if (e.SocketError != SocketError.Success)
+            try
             {
-                message.Context.Disconnect();
-                return;
-            }
-           
-            message.Context.SendReady.Release();
-            message.Context.UserContext.OnSend();
+                HandlerMessage message = (HandlerMessage)e.UserToken;
 
-            if (message.DoClose)
-            {
-                message.Context.Disconnect();
+                if (e.SocketError != SocketError.Success)
+                {
+                    message.Context.Disconnect();
+                    return;
+                }
+
+                message.Context.SendReady.Release();
+                message.Context.UserContext.OnSend();
+
+                if (message.DoClose)
+                {
+                    message.Context.Disconnect();
+                }
             }
+            catch (ObjectDisposedException)
+            {
+                
+            }
+
         }
 
         public void RegisterContext(Context context)

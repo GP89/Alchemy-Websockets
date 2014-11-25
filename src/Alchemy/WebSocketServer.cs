@@ -334,6 +334,10 @@ namespace Alchemy
                     context.ReceiveReady.Release();
                 }
             }
+            catch (ObjectDisposedException)
+            {
+
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);

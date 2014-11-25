@@ -155,6 +155,16 @@ namespace Alchemy.Classes
             catch
             {}
                     
+            try
+            {
+                if (SendReady != null)
+                    SendReady.Dispose();
+
+                if (ReceiveReady != null)
+                    ReceiveReady.Dispose();
+            }
+            catch
+            {}
 
             try
             {
