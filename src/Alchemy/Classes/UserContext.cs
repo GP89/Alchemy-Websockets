@@ -212,7 +212,7 @@ namespace Alchemy.Classes
             dataFrame.State = DataFrame.DataState.Ping;
             dataFrame.Append("ping");
             Context.Handler.Send(dataFrame, Context, false, false);
-            Send(dataFrame);
+            //Send(dataFrame);
         }
 
         public void Disconnect()
